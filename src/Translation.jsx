@@ -1,30 +1,37 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
- 
+import axios from 'axios';
+
 const Translation = () => {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [sourceLanguage, setSourceLanguage] = useState('en');
-   const [languageList, setLanguageList] = useState([]);
-  const [targetLanguage, setTargetLanguage] = useState('en');
+  const [targetLanguage, setTargetLanguage] = useState('es');
+  const [languageList, setLanguageList] = useState([]);
 
-  useEffect(()=>{
-    axios.get(`https://libretranslate.de/languages`)
-    .then(response=>setLanguageList(response.data))
-  },[])
+  useEffect(() => {
+    axios.get('https://libretranslate.com/languages')
+      .then(response => {
+        setLanguageList(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching language list:', error);
+      });
+  }, []);
+
   const handleTranslate = () => {
-     axios
-      .post('https://libretranslate.de/translate', null, {
-        params: {
-          q: inputText,
-          source: sourceLanguage,
-          target: targetLanguage,
-        },
-      })
-      .then((res) => {
-        setOutputText(res.data.translatedText);
-      })
-      .catch((err) => console.log(err));
+    axios.post('https://libretranslate.com/translate', {
+      q: inputText,
+      source: sourceLanguage,
+      target: targetLanguage,
+      format: 'text'
+    })
+    .then(response => {
+      setOutputText(response.data.translatedText);
+    })
+    .catch(error => {
+      console.error('Translation error:', error);
+      setOutputText('Translation error');
+    });
   };
 
   const handleClear = () => {
@@ -46,7 +53,7 @@ const Translation = () => {
               value={sourceLanguage}
               onChange={(e) => setSourceLanguage(e.target.value)}
             >
-              {languageList.map((option) => (
+              {languageList.map(option => (
                 <option key={option.code} value={option.code}>
                   {option.name}
                 </option>
@@ -63,7 +70,7 @@ const Translation = () => {
               value={targetLanguage}
               onChange={(e) => setTargetLanguage(e.target.value)}
             >
-              {languageList.map((option) => (
+              {languageList.map(option => (
                 <option key={option.code} value={option.code}>
                   {option.name}
                 </option>
@@ -104,7 +111,7 @@ const Translation = () => {
       </main>
       <footer className="bg-gray-200 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-gray-600">© 2023 Million Translation. All rights reserved.</p>
+          <p className="text-gray-600">© 2024 Libre Translate. All rights reserved.</p>
         </div>
       </footer>
     </div>
